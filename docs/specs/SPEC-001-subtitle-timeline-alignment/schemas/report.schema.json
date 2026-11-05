@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:subalign:report:1",
+  "title": "SubAlign alignment report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "format", "tool_versions", "coverage", "model", "adjustments", "warnings", "stage_timings"],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1 },
+    "format": { "enum": ["srt", "ass"] },
+    "tool_versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subalign", "whisper_cpp", "model_file", "model_sha256", "ffmpeg"],
+      "properties": {
+        "subalign": { "type": "string" },
+        "whisper_cpp": { "type": "string" },
+        "model_file": { "type": "string" },
+        "model_sha256": { "type": "string" },
+        "ffmpeg": { "type": "string" }
+      }
+    },
+    "coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "intercept", "slope", "breakpoints", "rmse"],
+      "properties": {
+        "kind": { "enum": ["constant", "linear", "piecewise"] },
+        "intercept": { "type": "number" },
+        "slope": { "type": "number" },
+        "breakpoints": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0 }
+        },
+        "rmse": { "type": "number", "minimum": 0 }
+      }
+    },
+    "adjustments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cue_index", "delta_start", "delta_end", "final_start", "final_end", "confidence", "segment_id", "group_id", "anchor_lang"],
+        "properties": {
+          "cue_index": { "type": "integer", "minimum": 1 },
+          "delta_start": { "type": "number" },
+          "delta_end": { "type": "number" },
+          "final_start": { "type": "number", "minimum": 0 },
+          "final_end": { "type": "number", "minimum": 0 },
+          "confidence": { "enum": ["high", "medium", "low"] },
+          "segment_id": { "type": "integer", "minimum": 0 },
+          "group_id": { "type": "integer", "minimum": 0 },
+          "anchor_lang": { "enum": ["zh", "en", "mixed", "none"] }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "stage_timings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["media", "asr", "align", "fit", "write"],
+      "properties": {
+        "media": { "type": "number", "minimum": 0 },
+        "asr": { "type": "number", "minimum": 0 },
+        "align": { "type": "number", "minimum": 0 },
+        "fit": { "type": "number", "minimum": 0 },
+        "write": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}
